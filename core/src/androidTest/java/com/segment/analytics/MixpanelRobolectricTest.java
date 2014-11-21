@@ -22,6 +22,7 @@ import static com.segment.analytics.TestUtils.IdentifyPayloadBuilder;
 import static com.segment.analytics.TestUtils.JSONObjectMatcher.jsonEq;
 import static com.segment.analytics.TestUtils.ScreenPayloadBuilder;
 import static com.segment.analytics.TestUtils.TrackPayloadBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,15 +55,28 @@ public class MixpanelRobolectricTest extends AbstractIntegrationTest {
     adapter.initialize(context, new JsonMap().putValue("token", "foo")
         .putValue("trackAllPages", true)
         .putValue("trackCategorizedPages", false)
-        .putValue("trackNamedPages", true), true);
+        .putValue("trackNamedPages", true)
+        .putValue("followAppLinks", false), true);
     verifyStatic();
     MixpanelAPI.getInstance(context, "foo");
+    assertThat(adapter.trackAllPages).isTrue();
+    assertThat(adapter.trackCategorizedPages).isFalse();
+    assertThat(adapter.trackNamedPages).isTrue();
+    assertThat(adapter.followAppLinks).isFalse();
   }
 
   @Test @Override public void activityCreate() {
+    integration.followAppLinks = false;
     Activity activity = mock(Activity.class);
     Bundle bundle = mock(Bundle.class);
     integration.onActivityCreated(activity, bundle);
+    verifyNoMoreMixpanelInteractions();
+
+    integration.token = "foo";
+    integration.followAppLinks = true;
+    integration.onActivityCreated(activity, bundle);
+    verifyStatic();
+    MixpanelAPI.getInstance(activity, "foo");
     verifyNoMoreMixpanelInteractions();
   }
 
