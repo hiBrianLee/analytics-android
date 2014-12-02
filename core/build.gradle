@@ -21,6 +21,7 @@ dependencies {
   androidTestCompile 'org.powermock:powermock-api-mockito:1.5.6'
   androidTestCompile 'org.powermock:powermock-classloading-xstream:1.5.6'
   androidTestCompile 'org.skyscreamer:jsonassert:1.2.3'
+  androidTestCompile 'com.google.caliper:caliper:1.0-beta-1'
 }
 
 android {
